@@ -11,15 +11,16 @@ import (
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/service"
 )
 
-func HandlerHTML(w http.ResponseWriter, r *http.Request) {
+func HTML(ww http.ResponseWriter, rr *http.Request) {
 	filepath := filepath.Join("../index.html")
-	http.ServeFile(w, r, filepath)
+	http.ServeFile(ww, rr, filepath)
 }
 
-func HandlerUpload(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
+func Upload(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(10000000000000); err != nil {
 		log.Printf("Ошибка парсинга: %v", err)
 		http.Error(w, "ошибка парсинга", http.StatusBadRequest)
+		return
 	}
 
 	file, header, err := r.FormFile("myFile")
@@ -48,22 +49,11 @@ func HandlerUpload(w http.ResponseWriter, r *http.Request) {
 	fileExt := filepath.Ext(header.Filename)
 	newFile := timeFile + fileExt
 
-	resultFile, err := os.Create(newFile)
+	err = os.WriteFile(newFile, []byte(resultText), 0755)
 	if err != nil {
-		log.Printf("Ошибка создания файла: %v", err)
-		http.Error(w, "ошибка создания файла", http.StatusInternalServerError)
-		return
+		log.Printf("Ошибка записи в файл: %v", err)
+		http.Error(w, "Ошибка записи в файл", http.StatusInternalServerError)
 	}
-
-	defer resultFile.Close()
-
-	file, err = os.OpenFile(newFile, os.O_WRONLY, 0755)
-	if err != nil {
-		log.Printf("Ошибка записи данных в файл: %v", err)
-		http.Error(w, "ошибка записи в файл", http.StatusInternalServerError)
-		return
-	}
-	defer file.Close()
 
 	w.Write([]byte(resultText))
 }

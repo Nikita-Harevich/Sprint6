@@ -14,7 +14,7 @@ func ConvertSrting(s string) (string, error) {
 		return "", errors.New("длинна строки 0")
 	}
 
-	if string(s[0]) != "." || string(s[0]) != "-" {
+	if string(s[0]) != "." && string(s[0]) != "-" {
 		return morse.ToMorse(s), nil
 	}
 
