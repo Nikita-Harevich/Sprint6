@@ -12,8 +12,7 @@ import (
 )
 
 func HTML(ww http.ResponseWriter, rr *http.Request) {
-	filepath := filepath.Join("../index.html")
-	http.ServeFile(ww, rr, filepath)
+	http.ServeFile(ww, rr, "index.html")
 }
 
 func Upload(w http.ResponseWriter, r *http.Request) {
